@@ -125,5 +125,10 @@ def get_stats():
     return jsonify(db.get_stats())
 
 
+@app.route("/api/journey")
+def get_journey():
+    return jsonify(db.get_journey())
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)

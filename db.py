@@ -114,6 +114,18 @@ SEED_WORDS = [
     ("niño", "child", "Common"),
 ]
 
+JOURNEY_STEPS = [
+    ("Greetings", "Essential greetings & polite expressions"),
+    ("Numbers", "Count from 1 to 10"),
+    ("Food", "Common foods & drinks"),
+    ("Family", "Family members"),
+    ("Colors", "Basic colors"),
+    ("Animals", "Common animals"),
+    ("Travel", "Travel & transportation"),
+    ("Verbs", "Essential action verbs"),
+    ("Common", "Everyday vocabulary"),
+]
+
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -362,3 +374,36 @@ def get_stats():
         "quiz_history": [dict(r) for r in quiz_results],
         "chat_count": chat_count,
     }
+
+
+# ---- Journey ----
+
+def get_journey():
+    conn = get_db()
+    steps = []
+    for i, (category, description) in enumerate(JOURNEY_STEPS):
+        total = conn.execute(
+            "SELECT COUNT(*) FROM words WHERE category = ?", (category,)
+        ).fetchone()[0]
+        learned = conn.execute(
+            """SELECT COUNT(*) FROM flashcard_state fs
+               JOIN words w ON w.id = fs.word_id
+               WHERE w.category = ? AND fs.repetitions >= 3""",
+            (category,),
+        ).fetchone()[0]
+        due = conn.execute(
+            """SELECT COUNT(*) FROM words w
+               LEFT JOIN flashcard_state fs ON w.id = fs.word_id
+               WHERE w.category = ? AND (fs.next_review IS NULL OR fs.next_review <= datetime('now'))""",
+            (category,),
+        ).fetchone()[0]
+        steps.append({
+            "step": i + 1,
+            "category": category,
+            "description": description,
+            "total": total,
+            "learned": learned,
+            "due": due,
+        })
+    conn.close()
+    return steps

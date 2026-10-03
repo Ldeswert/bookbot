@@ -34,6 +34,7 @@ const App = {
     if (view === "flashcards") this.loadFlashcards();
     if (view === "quiz") this.loadQuiz();
     if (view === "matching") this.loadMatching();
+    if (view === "journey") this.loadJourney();
     if (view === "chat") this.loadChat();
   },
 
@@ -338,6 +339,65 @@ const App = {
   async clearChat() {
     await fetch("/api/chat/clear", { method: "POST" });
     this.loadChat();
+  },
+
+  // ---- Journey ----
+  async loadJourney() {
+    const container = document.getElementById("journey-container");
+    container.innerHTML = '<div class="empty-state">Loading journey…</div>';
+    const res = await fetch("/api/journey");
+    const steps = await res.json();
+    this.renderJourney(steps);
+  },
+
+  renderJourney(steps) {
+    const container = document.getElementById("journey-container");
+    const width = 700;
+    const height = 500;
+    const cols = [100, 350, 600];
+    const rowY = [70, 240, 410];
+    const nodeR = 40;
+
+    const positions = steps.map((step, i) => {
+      const row = Math.floor(i / 3);
+      const colInRow = i % 3;
+      const x = row % 2 === 0 ? cols[colInRow] : cols[2 - colInRow];
+      const y = rowY[row];
+      return { x, y, ...step };
+    });
+
+    // SVG connecting lines
+    let lines = `<svg class="journey-svg" viewBox="0 0 ${width} ${height}">`;
+    for (let i = 0; i < positions.length - 1; i++) {
+      const a = positions[i];
+      const b = positions[i + 1];
+      if (a.y === b.y) {
+        lines += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="journey-line"/>`;
+      } else {
+        const midY = (a.y + b.y) / 2;
+        lines += `<path d="M${a.x},${a.y} C${a.x},${midY} ${b.x},${midY} ${b.x},${b.y}" class="journey-line" fill="none"/>`;
+      }
+    }
+    lines += "</svg>";
+
+    // HTML nodes + labels
+    let nodes = "";
+    positions.forEach((p) => {
+      const progress = p.total > 0 ? p.learned / p.total : 0;
+      const status = progress >= 1 ? "complete" : progress > 0 || p.due > 0 ? "active" : "locked";
+      nodes += `
+        <div class="journey-node journey-${status}" style="left:${p.x - nodeR}px; top:${p.y - nodeR}px;">
+          <span class="journey-step-num">${p.step}</span>
+          <span class="journey-progress">${p.learned}/${p.total}</span>
+        </div>
+        <div class="journey-label" style="left:${p.x - 85}px; top:${p.y + nodeR + 8}px; width:170px;">
+          <strong>${p.category}</strong>
+          <span>${p.description}</span>
+        </div>
+      `;
+    });
+
+    container.innerHTML = `<div class="journey-map" style="height:${height}px;">${lines}${nodes}</div>`;
   },
 
   escape(s) {
