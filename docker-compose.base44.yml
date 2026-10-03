@@ -1,0 +1,20 @@
+services:
+  web:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    command: ["python3", "server.py"]
+    environment:
+      - PORT=3000
+      - BOOK_PATH=books/frankenstein.txt
+      - PYTHONUNBUFFERED=1
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:3000/', timeout=5).read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

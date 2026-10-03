@@ -50,4 +50,5 @@ def get_book_text(path):
         return f.read()
 
 
-main()
+if __name__ == "__main__":
+    main()
