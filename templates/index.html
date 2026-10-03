@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¡Aprende! — Spanish Learning App</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="app">
+    <nav id="nav">
+      <h1 class="logo">¡Aprende!</h1>
+      <div class="nav-tabs">
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="flashcards">Flashcards</button>
+        <button class="nav-btn" data-view="quiz">Quiz</button>
+        <button class="nav-btn" data-view="matching">Matching</button>
+        <button class="nav-btn" data-view="chat">AI Chat</button>
+      </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view active">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="card">
+        <h2>Recent Quiz Scores</h2>
+        <div id="quiz-history"></div>
+      </div>
+    </section>
+
+    <!-- Flashcards -->
+    <section id="view-flashcards" class="view">
+      <div id="flashcard-container"></div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="view-quiz" class="view">
+      <div id="quiz-container"></div>
+    </section>
+
+    <!-- Matching -->
+    <section id="view-matching" class="view">
+      <div id="matching-container"></div>
+    </section>
+
+    <!-- Chat -->
+    <section id="view-chat" class="view">
+      <div id="chat-container">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Type a message in Spanish..." autocomplete="off">
+          <button id="chat-send" class="btn-primary">Send</button>
+          <button id="chat-clear" class="btn-ghost">Clear</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
