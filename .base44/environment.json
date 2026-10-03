@@ -2,5 +2,11 @@
   "previewPort": 3000,
   "healthPath": "/",
   "startCommand": "docker compose -f docker-compose.base44.yml up -d",
-  "secrets": []
+  "secrets": [
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "OpenAI API key for the AI conversation feature. Get it from https://platform.openai.com/api-keys",
+      "requiredAtBoot": false
+    }
+  ]
 }

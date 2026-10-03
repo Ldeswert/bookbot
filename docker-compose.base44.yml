@@ -6,10 +6,10 @@ services:
       - ./:/app
     ports:
       - "3000:3000"
-    command: ["python3", "server.py"]
+    env_file:
+      - /run/base44/app.env
+    command: ["sh", "-ec", "pip install --no-cache-dir -r requirements.txt && exec python3 app.py"]
     environment:
-      - PORT=3000
-      - BOOK_PATH=books/frankenstein.txt
       - PYTHONUNBUFFERED=1
     restart: on-failure
     healthcheck:
@@ -17,4 +17,4 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 20s
